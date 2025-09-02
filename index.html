@@ -23,8 +23,8 @@
                     min-width: 100%;
 
                     img {
-                        max-height: 100vh;
-                        width: 100%;
+                        height: 100vh;
+                        width: 100vw;
                         object-fit: cover;
                     }
                 }
@@ -92,87 +92,90 @@
 
 
     <script>
-        const track = document.querySelector(".track");
-        
-        const next = document.querySelector(".next");
-        const prev = document.querySelector(".prev");
-        const dotsContainer = document.querySelector(".dots");
-        let autoPlayInterval;
 
-        let currentIndex = 0;
+        document.addEventListener("DOMContentLoaded", function() {
+            const track = document.querySelector(".track");        
+            const next = document.querySelector(".next");
+            const prev = document.querySelector(".prev");
+            const dotsContainer = document.querySelector(".dots");
 
-        const images = [
-            "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
-            "https://images.unsplash.com/photo-1506260408121-e353d10b87c7",
-            "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843",
-            "https://plus.unsplash.com/premium_photo-1711434824963-ca894373272e",
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
-        ]
+            let autoPlayInterval;
+            let currentIndex = 0;
 
-        images.forEach(function(image) {
-            const slide = document.createElement("div");
-            slide.classList.add("slide");
-            const img = document.createElement("img");
-            img.src = image;
-            slide.appendChild(img);
+            const images = [
+                "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+                "https://images.unsplash.com/photo-1506260408121-e353d10b87c7",
+                "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843",
+                "https://plus.unsplash.com/premium_photo-1711434824963-ca894373272e",
+                "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+            ]
 
-            track.appendChild(slide);
-        })
+            images.forEach(function(image) {
+                const slide = document.createElement("div");
+                slide.classList.add("slide");
+                const img = document.createElement("img");
+                img.src = image;
+                slide.appendChild(img);
+                track.appendChild(slide);
+            })
 
-        const slides = Array.from(track.children);
+            const slides = Array.from(track.children);
 
-        slides.forEach(function(_, i) {
-            const dot = document.createElement("span");
-            dot.classList.add("dot");
-            if (i === 0) {
-                dot.classList.add("active");
+            slides.forEach(function(_, i) {
+                const dot = document.createElement("span");
+                dot.classList.add("dot");
+                if (i === 0) {
+                    dot.classList.add("active");
+                }
+                dot.addEventListener("click", function() {
+                    goToSlide(i);
+                    clearInterval(autoPlayInterval);
+                })
+                dotsContainer.appendChild(dot);
+            })
+
+            const dots = Array.from(document.querySelectorAll(".dot"));
+
+            function updateCarousel() {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach(function(dot, i) {
+                    dot.classList.toggle("active", i === currentIndex);
+                })
             }
-            dot.addEventListener("click", function() {
-                goToSlide(i);
-                clearInterval(autoPlayInterval);
-            })
-            dotsContainer.appendChild(dot);
-        })
 
-        const dots = Array.from(document.querySelectorAll(".dot"));
-
-        function updateCarousel() {
-            track.style.transform = `translateX(-${currentIndex * 100}%)`;
-            dots.forEach(function(dot, i) {
-                dot.classList.toggle("active", i === currentIndex);
-            })
-        }
-
-        function goToSlide(index) {
-            currentIndex = (index + slides.length) % slides.length;
-            updateCarousel();
-        }
+            function goToSlide(index) {
+                currentIndex = (index + slides.length) % slides.length;
+                updateCarousel();
+            }
        
 
-        function startAutoPlay() {
-            autoPlayInterval = setInterval(function() {
+            function startAutoPlay() {
+                autoPlayInterval = setInterval(function() {
+                    goToSlide(currentIndex + 1);
+                }, 3000)
+            }
+
+            next.addEventListener("click", function() {
+                stopAutoPlay();
                 goToSlide(currentIndex + 1);
-            }, 3000)
-        }
+                
+            });
 
-        next.addEventListener("click", function() {
-            stopAutoPlay();
-            goToSlide(currentIndex + 1);
-            
-        });
+            prev.addEventListener("click", function() {
+                stopAutoPlay();
+                goToSlide(currentIndex - 1);
+                
+            });
 
-        prev.addEventListener("click", function() {
-            stopAutoPlay();
-            goToSlide(currentIndex - 1);
-            
-        });
+            function stopAutoPlay() {
+                console.log("stop");
+                clearInterval(autoPlayInterval)
+            }
 
-        function stopAutoPlay() {
-            console.log("stop");
-            clearInterval(autoPlayInterval)
-        }
+            startAutoPlay();
+        })
 
-        startAutoPlay();
+        
     </script>
 </body>
 </html>
