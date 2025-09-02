@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+        }
+        .carousel {
+            overflow: hidden;
+            position: relative;
+
+            .track {
+                display: flex;
+
+                .slide {
+                    min-width: 100%;
+
+                    img {
+                        max-height: 100vh;
+                        width: 100%;
+                        object-fit: cover;
+                    }
+                }
+            }
+
+            .prev,
+            .next {
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                border-radius: 40px;
+                background-color: rgb(0 0 0 / 50%);
+                color: #ffffff;
+                z-index: 99;
+                top: 50%;
+                text-align: center;
+                border: 0;
+            }
+
+            .prev {
+                left: 15px;
+            }
+            .next {
+                right: 15px;
+            }
+            .dots {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 6px;
+
+                position: absolute;
+                left: 0;
+                top: 95%;
+                width: 100%;
+
+                .dot {
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 10px;
+                    background-color: #ffffff;
+                    border: 1px solid #c4c4c4;
+
+                    &.active {
+                        background-color: #ffa500;
+                    }
+                }
+            }
+
+        }
+
+    </style>
+</head>
+<body>
+    <div class="carousel">
+        <div class="track"></div>
+
+        <button class="prev">❮</button>
+        <button class="next">❯</button>
+
+        <div class="dots"></div>
+
+    </div>
+
+
+    <script>
+        const track = document.querySelector(".track");
+        
+        const next = document.querySelector(".next");
+        const prev = document.querySelector(".prev");
+        const dotsContainer = document.querySelector(".dots");
+        let autoPlayInterval;
+
+        let currentIndex = 0;
+
+        const images = [
+            "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07",
+            "https://images.unsplash.com/photo-1506260408121-e353d10b87c7",
+            "https://images.unsplash.com/photo-1523712999610-f77fbcfc3843",
+            "https://plus.unsplash.com/premium_photo-1711434824963-ca894373272e",
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
+        ]
+
+        images.forEach(function(image) {
+            const slide = document.createElement("div");
+            slide.classList.add("slide");
+            const img = document.createElement("img");
+            img.src = image;
+            slide.appendChild(img);
+
+            track.appendChild(slide);
+        })
+
+        const slides = Array.from(track.children);
+
+        slides.forEach(function(_, i) {
+            const dot = document.createElement("span");
+            dot.classList.add("dot");
+            if (i === 0) {
+                dot.classList.add("active");
+            }
+            dot.addEventListener("click", function() {
+                goToSlide(i);
+                clearInterval(autoPlayInterval);
+            })
+            dotsContainer.appendChild(dot);
+        })
+
+        const dots = Array.from(document.querySelectorAll(".dot"));
+
+        function updateCarousel() {
+            track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            dots.forEach(function(dot, i) {
+                dot.classList.toggle("active", i === currentIndex);
+            })
+        }
+
+        function goToSlide(index) {
+            currentIndex = (index + slides.length) % slides.length;
+            updateCarousel();
+        }
+       
+
+        function startAutoPlay() {
+            autoPlayInterval = setInterval(function() {
+                goToSlide(currentIndex + 1);
+            }, 3000)
+        }
+
+        next.addEventListener("click", function() {
+            stopAutoPlay();
+            goToSlide(currentIndex + 1);
+            
+        });
+
+        prev.addEventListener("click", function() {
+            stopAutoPlay();
+            goToSlide(currentIndex - 1);
+            
+        });
+
+        function stopAutoPlay() {
+            console.log("stop");
+            clearInterval(autoPlayInterval)
+        }
+
+        startAutoPlay();
+    </script>
+</body>
+</html>
